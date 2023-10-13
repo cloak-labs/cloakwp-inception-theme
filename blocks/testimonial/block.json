@@ -14,7 +14,6 @@
   ],
   "acf": {
     "mode": "edit",
-    "renderCallback": "render_acf_block_iframe_preview",
     "postTypes": [
       "page",
       "post"
@@ -50,8 +49,8 @@
       "default": {
         "spacing": {
           "margin": {
-            "top": "80px",
-            "bottom": "80px"
+            "top": "72px",
+            "bottom": "72px"
           }
         }
       }
