@@ -1,0 +1,75 @@
+{
+  "name": "acf/posts",
+  "title": "Posts",
+  "description": "Display an archive of posts (or CPTs).",
+  "textdomain": "cloakwp",
+  "category": "widgets",
+  "icon": "admin-page",
+  "keywords": [
+    "posts",
+    "pages",
+    "query",
+    "tiles",
+    "list"
+  ],
+  "acf": {
+    "mode": "edit"
+  },
+  "align": false,
+  "supports": {
+    "anchor": true,
+    "mode": true,
+    "align": false,
+    "html": false,
+    "reusable": false,
+    "lock": false,
+    "spacing": {
+      "margin": [
+        "top",
+        "bottom"
+      ]
+    },
+    "color": {
+      "background": true,
+      "gradients": false,
+      "text": false
+    }
+  },
+  "attributes": {
+    "backgroundColor": {
+      "type": "string",
+      "default": "gray-100"
+    },
+    "style": {
+      "type": "object",
+      "default": {
+        "spacing": {
+          "margin": {
+            "top": "72px",
+            "bottom": "72px"
+          }
+        }
+      }
+    }
+  },
+  "example": {
+    "attributes": {
+      "mode": "preview",
+      "data": {
+        "cloakwp_block_inserter_iframe": true,
+        "field_fd80b38e": "Post",
+        "field_41fc116f": "Learn more",
+        "field_f0ced213": ["date"]
+      },
+      "style": {
+        "spacing": {
+          "margin": {
+            "top": "0px",
+            "bottom": "0px"
+          }
+        }
+      }
+    },
+    "viewportWidth": 1000
+  }
+}
