@@ -8,6 +8,7 @@ add_action( 'init', function() {
 	register_extended_post_type( 'testimonial', array(
     'menu_icon' => 'dashicons-format-chat',
     'has_archive' => false,
+    'public' => true,
     'show_in_rest' => true,
     'block_editor' => false,
     'enter_title_here' => "Person's name",
@@ -48,7 +49,9 @@ add_action( 'init', function() {
     'show_in_rest' => true,
   ]);
   */
-});
+
+  // Important to specify priority of 0, so that our custom ACF field, PostTypeSelect, picks up this post type
+}, 0);
 
 
 // Register post ACF Fields
@@ -62,7 +65,7 @@ add_action('acf/init', function() {
           ->instructions("The person's title/position at their company."),
     ],
     'location' => [
-        Location::where('post_type', 'testimonial')
+        Location::where('post_type', '==', 'testimonial')
     ],
     'style' => 'default',
     'position' => 'acf_after_title',
