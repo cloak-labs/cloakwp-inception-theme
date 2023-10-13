@@ -20,8 +20,11 @@ html :where(.editor-styles-wrapper) {
     border-color: var(--wp--preset--color--green-100) !important;
 }
 
-/* Other styles to make Gutenberg editor line up with decoupled front-end's styling. */
+/*
+  Other styles to make Gutenberg editor line up with decoupled front-end's styling.
+*/
 
-.editor-styles-wrapper .block-editor-block-list__block.wp-block.wp-block-acf-cards {
+.editor-styles-wrapper .block-editor-block-list__block.wp-block.wp-block-acf-cards,
+.editor-styles-wrapper .block-editor-block-list__block.wp-block.wp-block-acf-posts {
   background-color: transparent !important;
 }
