@@ -2,7 +2,6 @@
 
 use CloakWP\ACF\Block;
 use CloakWP\ACF\Fields\Alignment;
-use CloakWP\ACF\Fields\ThemeColorPicker;
 use Extended\ACF\ConditionalLogic;
 use Extended\ACF\Fields\Link;
 use Extended\ACF\Fields\RadioButton;
@@ -13,43 +12,47 @@ use Extended\ACF\Fields\Image;
 return Block::make(__DIR__ . '/block.json')
   ->fields([
     RadioButton::make('Hero Style')
-      ->instructions('Select the style of the hero section.')
+      ->helperText('Select the style of the hero section.')
       ->choices([
         'image_right' => 'Image Right',
         'bg_image' => 'Background Image',
         'no_image' => 'No image',
       ])
-      ->defaultValue('image_right')
+      ->default('image_right')
       ->layout('horizontal')
       ->column(50),
-    Alignment::make('Content Alignment')
-      // ->include(['left', 'center'])
-      ->defaultValue('left')
-      ->column(50)
-      ->conditionalLogic([
-        ConditionalLogic::where('hero_style', '!=', 'image_right') // available operators: ==, !=, >, <, ==pattern, ==contains, ==empty, !=empty
-      ]),
-    ThemeColorPicker::make('Button Background')
-      ->include(['gray-600', 'gray-700'])
-      // ->exclude(['blue-600', 'blue-700', 'blue-800', 'blue-900', 'blue-950'])
-      ->defaultValue('gray-700'),
-    Text::make('Eyebrow')
-      ->instructions('1-3 words above H1.')
-      ->column(50),
-    Text::make('H1')
-      ->instructions('Main title of page.'),
-    Textarea::make('Subtitle')
-      ->instructions('1-3 sentences below the H1.'),
-    Link::make('CTA Button')
-      ->column(50)
-      ->instructions("Select a page to link to, followed by the CTA button's text."),
     Image::make('Image')
-      ->instructions('Upload/select an image to show on the right of the hero text.')
+      ->helperText('Upload/select an image, shown as either the background or to the right depending on your Hero Style choice.')
       ->previewSize('medium')
       ->column(50)
       ->conditionalLogic([
         ConditionalLogic::where('hero_style', '!=', 'no_image') // available operators: ==, !=, >, <, ==pattern, ==contains, ==empty, !=empty
       ])
-      ->returnFormat('id')
+      ->format('id')
       ->required(),
+    Alignment::make('Content Alignment')
+      ->include(['left', 'center'])
+      ->default('left')
+      ->column(50)
+      ->conditionalLogic([
+        ConditionalLogic::where('hero_style', '!=', 'image_right') // available operators: ==, !=, >, <, ==pattern, ==contains, ==empty, !=empty
+      ]),
+    RadioButton::make('Inner Content Width')
+      ->choices([
+        'default' => 'Content',
+        'wide' => 'Wide',
+      ])
+      ->default('default')
+      ->layout('horizontal')
+      ->column(50),
+    Text::make('Eyebrow')
+      ->helperText('1-3 words above H1.')
+      ->column(50),
+    Text::make('H1')
+      ->helperText('Main title of page.'),
+    Textarea::make('Subtitle')
+      ->helperText('1-3 sentences below the H1.'),
+    Link::make('CTA Button')
+      ->column(50)
+      ->helperText("Select a page to link to, followed by the CTA button's text.")
   ]);

@@ -1,7 +1,8 @@
 {
-  "name": "acf/testimonial",
-  "title": "Testimonial",
-  "description": "A custom testimonial block.",
+  "$schema": "https://advancedcustomfields.com/schemas/json/main/block.json",
+  "name": "testimonial",
+  "title": "Testimonial(s)",
+  "description": "Display testimonials.",
   "textdomain": "cloakwp",
   "category": "widgets",
   "icon": "editor-quote",
@@ -13,17 +14,15 @@
     "quote"
   ],
   "acf": {
-    "mode": "edit",
-    "postTypes": [
-      "page",
-      "post"
-    ]
+    "mode": "edit"
   },
-  "align": false,
   "supports": {
     "anchor": true,
     "mode": true,
-    "align": false,
+    "align": [
+      "wide",
+      "full"
+    ],
     "html": false,
     "reusable": false,
     "lock": false,
@@ -32,25 +31,20 @@
         "top",
         "bottom"
       ]
-    },
-    "color": {
-      "background": true,
-      "gradients": false,
-      "text": false
     }
   },
   "attributes": {
-    "backgroundColor": {
-      "type": "string",
-      "default": "blue-300"
+    "align": {
+      "type": "object",
+      "default": "wide"
     },
     "style": {
       "type": "object",
       "default": {
         "spacing": {
           "margin": {
-            "top": "72px",
-            "bottom": "72px"
+            "top": "var:preset|spacing|70",
+            "bottom": "var:preset|spacing|70"
           }
         }
       }

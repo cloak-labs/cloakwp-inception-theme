@@ -1,5 +1,6 @@
 {
-  "name": "acf/posts",
+  "$schema": "https://advancedcustomfields.com/schemas/json/main/block.json",
+  "name": "posts",
   "title": "Posts",
   "description": "Display an archive of posts (or CPTs).",
   "textdomain": "cloakwp",
@@ -15,11 +16,12 @@
   "acf": {
     "mode": "edit"
   },
-  "align": false,
   "supports": {
     "anchor": true,
     "mode": true,
-    "align": false,
+    "align": [
+      "wide"
+    ],
     "html": false,
     "reusable": false,
     "lock": false,
@@ -28,28 +30,12 @@
         "top",
         "bottom"
       ]
-    },
-    "color": {
-      "background": true,
-      "gradients": false,
-      "text": false
     }
   },
   "attributes": {
-    "backgroundColor": {
-      "type": "string",
-      "default": "gray-100"
-    },
-    "style": {
+    "align": {
       "type": "object",
-      "default": {
-        "spacing": {
-          "margin": {
-            "top": "72px",
-            "bottom": "72px"
-          }
-        }
-      }
+      "default": "wide"
     }
   },
   "example": {
@@ -59,7 +45,9 @@
         "cloakwp_block_inserter_iframe": true,
         "field_fd80b38e": "Post",
         "field_41fc116f": "Learn more",
-        "field_f0ced213": ["date"]
+        "field_f0ced213": [
+          "date"
+        ]
       },
       "style": {
         "spacing": {

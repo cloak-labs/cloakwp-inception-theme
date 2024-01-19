@@ -1,13 +1,20 @@
 <?php
 
-use CloakWP\ACF\FieldGroup;
+use CloakWP\CloakWP;
+use CloakWP\Frontend;
 use CloakWP\Admin\Enqueue\Script;
 use CloakWP\Admin\Enqueue\Stylesheet;
-use CloakWP\CloakWP;
 use CloakWP\Content\PostType;
-use CloakWP\Frontend;
 use CloakWP\Utils;
+use CloakWP\ACF\FieldGroup;
 use Extended\ACF\Fields\Text;
+use Extended\ACF\Fields\Image;
+use Extended\ACF\Location;
+
+$IS_DEVELOPMENT_MODE = str_contains(\MY_FRONTEND_URL, 'localhost');
+$THEME_VERSION = wp_get_theme()->get('Version');
+$ASSETS_VERSION = $IS_DEVELOPMENT_MODE ? uniqid() : $THEME_VERSION;
+
 
 if (class_exists('CloakWP\Utils')) {
   Utils::require_glob(get_stylesheet_directory() . '/globals/*.php');
@@ -41,34 +48,38 @@ if (class_exists('CloakWP\Utils')) {
  *  - add globals() method that accepts an array of Global classes -- these are ACF Options pages, which we're essentially renaming to "Globals"
  */
 
-function custom_check_login_status()
-{
-  $isLoggedIn = false;
-  if ($_COOKIE && is_array($_COOKIE)) {
-    if (array_key_exists(LOGGED_IN_COOKIE, $_COOKIE)) $isLoggedIn = true;
-  }
-  return rest_ensure_response($isLoggedIn);
-}
-
-add_action('rest_api_init', function () {
-  register_rest_route('jwt-auth/v1', '/is-logged-in', array(
-    'methods' => 'GET',
-    'callback' => 'custom_check_login_status',
-    'permission_callback' => function ($request) {
-      /*
-        if JWT is passed as header, is_user_logged_in() should return true, otherwise false;
-        but for some reason this only works if the route namespace is 'jwt-auth/v1'.
-        TODO: look into making this work on routes with custom namespaces -- might need to fork the JWT Auth WP plugin
-      */
-      return is_user_logged_in();
-    }
-  ));
-});
 
 
+// Add custom fields to WP's internal User Profile pages:
+FieldGroup::make('User Fields')
+  ->fields([
+    Image::make('Headshot')
+      ->helperText('Used for author profile/bio frontend components.')
+      ->previewSize('medium')
+    // ->withSettings(['local' => 'php'])
+  ])
+  ->location([
+    Location::where('user_form', 'edit')
+  ])
+  ->register();
 
-$cloakWP = CloakWP::getInstance();
-$cloakWP
+
+/**
+ * Below we include Twitter/X usernames in CloakWP's `author` meta, as returned by `Utils::get_pretty_author()` (affects the `author` 
+ * field in REST API responses). We render this Twitter username under the author's name via the frontend's `AvatarProfileBadge` component. 
+ * You can add/remove various user meta to the `author` object via this filter -- to see all available meta, return `true` and visit a 
+ * post/page REST endpoint, then come back and return an array of all the meta keys you wish to include.
+ */
+add_filter('cloakwp/author_format/included_meta', function ($default_meta, $user_meta) {
+  // return true; // return true to include all user_meta
+  return array_merge($default_meta, ['twitter', 'description']);
+}, 10, 2);
+
+
+$CloakWP = CloakWP::getInstance();
+
+/** @disregard -- ignore \MY_FRONTEND_URL Intelephense error */
+$CloakWP
   ->frontends([
     Frontend::make('website', \MY_FRONTEND_URL)
       ->authSecret(\CLOAKWP_AUTH_SECRET)
@@ -77,93 +88,89 @@ $cloakWP
       ])
       ->enableDefaultOnDemandISR()
       ->enableDecoupledPreview()
-      ->separateApiRouteUrl(function () {
-        if (str_contains(\MY_FRONTEND_URL, 'localhost')) {
+      ->apiRouteUrl(function () use ($IS_DEVELOPMENT_MODE) {
+        /** @disregard -- ignore \MY_FRONTEND_URL Intelephense error */
+        if ($IS_DEVELOPMENT_MODE) {
+          // we use the IP address alternative to localhost while in dev, ensuring API requests from Docker to our locally running frontend actually work:
           return 'http://172.25.219.69:5000';
         } else {
+          /** @disregard -- ignore \MY_FRONTEND_URL Intelephense error */
           return \MY_FRONTEND_URL;
         }
       })
   ])
   ->enqueueAssets([
-    Script::make('my-gutenberg-editor-js')
+    Script::make('my-editor-js')
       ->hook('enqueue_block_editor_assets')
-      ->src(get_theme_file_uri('/js/gutenberg-scripts.js'))
-      ->version('1.0.0')
+      ->src(get_theme_file_uri('/assets/js/editor.js'))
+      ->version($ASSETS_VERSION)
+      ->deps(array('jquery', 'wp-blocks', 'wp-dom-ready', 'wp-i18n'))
       ->inFooter(),
-    Stylesheet::make('my-gutenberg-editor-styles')
+    Stylesheet::make('my-editor-styles')
       ->hook('enqueue_block_editor_assets')
-      ->src(get_theme_file_uri('/css/gutenberg-styles.css'))
-      ->version('1.0.0'),
-    Stylesheet::make('my-general-admin-styles')
-      ->src(get_theme_file_uri('/css/admin-styles.css'))
-      ->version('1.0.0')
+      ->src(get_theme_file_uri('/assets/css/editor.css'))
+      ->version($ASSETS_VERSION),
+    Stylesheet::make('my-admin-styles')
+      ->src(get_theme_file_uri('/assets/css/admin.css'))
+      ->version($ASSETS_VERSION)
   ])
   ->postTypes([
+    // PostType::make('user')
+    //   ->fieldGroups([
+    //     FieldGroup::make('User Fields')
+    //       ->fields([
+    //         Image::make('Headshot')
+    //           ->helperText('Used for author profile/bio frontend components.')
+    //       ])
+    //   ]),
     PostType::make('post')
       ->rewrite([
         'permastruct' => '/blog/%post%'
       ])
-      ->beforeChange(function ($data) {
-        // add some custom ISR stuff on top of default post revalidation
-        Utils::write_log('Save post !!');
-      })
-    // ->afterRead(function ($posts) {
-    //   // TODO: move below validation into afterRead as built-in abstraction
-    //   // if (!is_array($posts) || !count($posts)) return $posts;
-
-    //   $res = array_map(function ($p) {
-    //     // TODO: move below validation into afterRead as built-in abstraction
-    //     // if ($p->post_type != 'post') return $p;
-
-    //     $p->pathname = Utils::get_post_pathname($p->ID);
-    //     return $p;
-    //   }, $posts);
-    //   return $res;
-    // })
-    // ->virtualFields([
-    //   'pathname' => fn ($post) => Utils::get_post_pathname($post->ID)
-    // ])
-    ,
+      ->afterChange(function ($data) use ($CloakWP) {
+        /**
+         * Saving a post will only revalidate its own single page by default, so below we manually 
+         * revalidate the root "blog" page to ensure the post list updates as well:
+         */
+        $CloakWP->getActiveFrontend()->revalidatePages(['/blog']);
+      }),
     PostType::make('page')
-      ->beforeChange(function ($data) {
+      ->afterChange(function ($data) {
         // add some custom ISR stuff on top of default post revalidation
         Utils::write_log('Save page ##');
-      })
-    // ->virtualFields([
-    //   'pathname' => fn ($post) => Utils::get_post_pathname($post->ID)
-    // ])
-    ,
+      }),
     PostType::make('testimonial')
       ->menuIcon('dashicons-format-chat')
-      ->hasArchive(false)
-      ->public(true)
+      // ->hasArchive(false)
+      ->public(false)
+      ->showUi(true)
       ->showInRest(true)
       ->blockEditor(false)
       ->titlePlaceholder("Person's name")
       ->featuredImageLabel("Person's Headshot")
-      ->rewrite([
-        'permastruct' => '/testimonial/%testimonial%'
-      ])
+      ->publiclyQueryable(false)
+      // ->rewrite([
+      //   'permastruct' => '/testimonial/%testimonial%'
+      // ])
       ->adminCols([
         // A featured image column:
         'featured_image' => array(
-          'title'          => 'Headshot',
+          'title' => 'Headshot',
           'featured_image' => 'thumbnail',
-          'width'          => 60,
-          'height'         => 60,
+          'width' => 60,
+          'height' => 60,
         ),
         // The default Title column:
         'title',
         // A meta field column:
         'last_modified' => array(
-          'title'       => 'Last Modified',
-          'post_field'    => 'post_modified',
+          'title' => 'Last Modified',
+          'post_field' => 'post_modified',
           'date_format' => 'd/m/Y g:i A'
         ),
         'published' => array(
-          'title'       => 'Published',
-          'post_field'    => 'post_date',
+          'title' => 'Published',
+          'post_field' => 'post_date',
           'date_format' => 'd/m/Y g:i A'
         ),
       ])
@@ -171,39 +178,33 @@ $cloakWP
         FieldGroup::make('Testimonial Fields')
           ->fields([
             Text::make('Company')
-              ->instructions("The company this person works for."),
+              ->helperText("The company this person works for."),
             Text::make('Position')
-              ->instructions("The person's title/position at their company."),
+              ->helperText("The person's title/position at their company."),
           ])
       ])
-      ->beforeChange(function ($postId) use ($cloakWP) {
+      ->afterChange(function ($postId) use ($CloakWP) {
         // when a testimonial post is created/updated, we also rebuild the /testimonials listing page:
-        $cloakWP->getActiveFrontend()->revalidatePages([$postId, '/testimonials']);
-      })
-      ->apiResponse(function ($response, $post, $context) {
-        // modify API response for Testimonial posts
-        $data = $response->data;
-        $data['customField'] = 'simple as that';
-        $response->data = $data;
-        return $response;
+        $CloakWP->getActiveFrontend()->revalidatePages([$postId, '/testimonials']);
       })
   ])
   ->blocks(__DIR__ . '/blocks')
-  ->coreBlocks([
+  ->enabledCoreBlocks([
     'core/paragraph',
     'core/heading',
-    'core/button',
     'core/buttons',
+    'core/button',
     'core/list',
     'core/list-item',
     'core/embed',
     'core/html',
     'core/group',
+    'core/quote',
+    'core/code',
     'core/columns' => [
       'postTypes' => ['page', 'post']
     ],
     'core/image' => [
       'postTypes' => ['page', 'post']
     ]
-  ])
-  ->init();
+  ]);

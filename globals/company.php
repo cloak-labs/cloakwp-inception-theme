@@ -6,7 +6,7 @@
 use Extended\ACF\Fields\Accordion;
 use Extended\ACF\Fields\Text;
 use Extended\ACF\Fields\Image;
-use Extended\ACF\Fields\WysiwygEditor;
+use Extended\ACF\Fields\WYSIWYGEditor;
 use Extended\ACF\Location;
 
 acf_add_options_page([
@@ -22,15 +22,15 @@ register_extended_field_group([
     Text::make('Company Name')
       ->required(),
     Image::make('Logo')
-      ->instructions('For use on light backgrounds')
+      ->helperText('For use on light backgrounds')
       ->column(50),
     Image::make('Logo on dark')
-      ->instructions('For use on dark backgrounds')
+      ->helperText('For use on dark backgrounds')
       ->wrapper(['class' => 'dark-bg'])
       ->column(50),
-    WysiwygEditor::make('Tagline')
-      ->instructions('Short company tagline, for use in footer.')
-      ->mediaUpload(false)
+    WYSIWYGEditor::make('Tagline')
+      ->helperText('Short company tagline, for use in footer.')
+      ->disableMediaUpload()
       ->toolbar(['bold', 'italic', 'link', 'underline'])
       ->tabs('visual'),
     Accordion::make('Social Links'),

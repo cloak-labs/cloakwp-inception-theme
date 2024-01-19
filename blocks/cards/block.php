@@ -17,17 +17,17 @@ use Extended\ACF\Fields\Text;
 return Block::make(__DIR__ . '/block.json')
   ->fields([
     Number::make('# of Columns', 'num_columns')
-      ->defaultValue(3)
+      ->default(3)
       ->column(50)
       ->min(1)
       ->max(4),
     RadioButton::make('CTA Strategy')
       ->choices(['None', 'Shared', 'Individual'])
       ->column(50)
-      ->defaultValue('none')
+      ->default('none')
       ->layout('horizontal'),
     Text::make('Shared CTA')
-      ->instructions('Shared CTA text for all cards.')
+      ->helperText('Shared CTA text for all cards.')
       ->placeholder('eg. Read More')
       ->conditionalLogic([
         ConditionalLogic::where('cta_strategy', '==', 'shared')
@@ -36,8 +36,8 @@ return Block::make(__DIR__ . '/block.json')
       ->fields([
         // InnerBlocks::make('Card Inner Blocks'),
         TrueFalse::make('Select page?', 'is_page')
-          ->instructions('Choose an existing page/post to auto-populate this card.')
-          ->stylisedUi(),
+          ->helperText('Choose an existing page/post to auto-populate this card.')
+          ->stylized(),
         PostObject::make('Page')
           ->postTypes(['page', 'post'])
           ->required()
@@ -45,13 +45,13 @@ return Block::make(__DIR__ . '/block.json')
             ConditionalLogic::where('is_page', '==', 1)
           ]),
         Text::make('Individual CTA')
-          ->instructions('CTA text unique to this card.')
+          ->helperText('CTA text unique to this card.')
           ->placeholder('eg. Read More')
           ->conditionalLogic([
             ConditionalLogic::where('is_page', '==', 1)->and('cta_strategy', '==', 'individual')
           ]),
         Message::make('Subtitle')
-          ->message("To add a small subtitle below each card title, you must edit each selected post's 'excerpt' field.")
+          ->body("To add a small subtitle below each card title, you must edit each selected post's 'excerpt' field.")
           ->escapeHtml()
           ->conditionalLogic([
             ConditionalLogic::where('is_page', '==', 1)
@@ -59,7 +59,7 @@ return Block::make(__DIR__ . '/block.json')
         Group::make('Card Data')
           ->fields([
             Image::make('Image')
-              ->instructions('Choose an image to display at the top of the card.')
+              ->helperText('Choose an image to display at the top of the card.')
               ->previewSize('medium')
               ->column(50)
               ->required(),
@@ -68,12 +68,12 @@ return Block::make(__DIR__ . '/block.json')
               ->required(),
             Link::make('Link')
               ->column(50)
-              ->instructions('Optionally link this card to another page/website.'),
+              ->helperText('Optionally link this card to another page/website.'),
             Textarea::make('Excerpt')
               ->column(50)
               ->rows(4),
             Text::make('Individual CTA')
-              ->instructions('CTA text unique to this card.')
+              ->helperText('CTA text unique to this card.')
               ->placeholder('eg. Read More')
               ->conditionalLogic([
                 ConditionalLogic::where('cta_strategy', '==', 'individual')
@@ -83,8 +83,8 @@ return Block::make(__DIR__ . '/block.json')
             ConditionalLogic::where('is_page', '==', 0)
           ]),
       ])
-      ->min(1)
-      ->buttonLabel('Add card')
+      ->minRows(1)
+      ->button('Add card')
       ->layout('block')
       ->required(),
   ]);

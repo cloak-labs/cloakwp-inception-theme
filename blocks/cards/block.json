@@ -1,5 +1,6 @@
 {
-  "name": "acf/cards",
+  "$schema": "https://advancedcustomfields.com/schemas/json/main/block.json",
+  "name": "cards",
   "title": "Cards",
   "description": "Display a few cards in a grid.",
   "textdomain": "cloakwp",
@@ -14,11 +15,10 @@
   "acf": {
     "mode": "edit"
   },
-  "align": false,
   "supports": {
     "anchor": true,
     "mode": true,
-    "align": false,
+    "align": true,
     "html": false,
     "reusable": false,
     "lock": false,
@@ -27,28 +27,6 @@
         "top",
         "bottom"
       ]
-    },
-    "color": {
-      "background": true,
-      "gradients": false,
-      "text": false
-    }
-  },
-  "attributes": {
-    "backgroundColor": {
-      "type": "string",
-      "default": "gray-100"
-    },
-    "style": {
-      "type": "object",
-      "default": {
-        "spacing": {
-          "margin": {
-            "top": "72px",
-            "bottom": "72px"
-          }
-        }
-      }
     }
   },
   "example": {

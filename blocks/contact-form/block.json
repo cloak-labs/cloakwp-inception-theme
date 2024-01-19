@@ -1,19 +1,17 @@
 {
   "$schema": "https://advancedcustomfields.com/schemas/json/main/block.json",
-  "name": "hero",
-  "title": "Hero",
-  "description": "A custom block for hero sections.",
+  "name": "contact-form",
+  "title": "Contact Form",
+  "description": "A generic contact form.",
   "textdomain": "cloakwp",
   "category": "widgets",
-  "icon": "cover-image",
+  "icon": "feedback",
   "keywords": [
-    "header",
-    "hero",
-    "page header",
-    "page hero"
+    "contact",
+    "form"
   ],
   "acf": {
-    "mode": "edit",
+    "mode": "preview",
     "postTypes": [
       "page"
     ]
@@ -22,9 +20,7 @@
     "jsx": true,
     "anchor": true,
     "mode": true,
-    "align": [
-      "full"
-    ],
+    "align": true,
     "html": false,
     "reusable": false,
     "lock": false,
@@ -36,25 +32,23 @@
     },
     "spacing": {
       "margin": [
+        "top",
         "bottom"
       ]
     }
   },
   "attributes": {
-    "align": {
-      "type": "object",
-      "default": "full"
-    },
     "backgroundColor": {
       "type": "string",
-      "default": "bg-root-dim"
+      "default": "bg-root"
     },
     "style": {
       "type": "object",
       "default": {
         "spacing": {
           "margin": {
-            "bottom": "var:preset|spacing|80"
+            "top": "var:preset|spacing|20",
+            "bottom": "var:preset|spacing|60"
           }
         }
       }

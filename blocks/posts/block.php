@@ -9,12 +9,12 @@ use Extended\ACF\Fields\Text;
 return Block::make(__DIR__ . '/block.json')
   ->fields([
     PostTypeSelect::make('Post Type')
-      ->stylisedUi(),
+      ->stylized(),
     Text::make('CTA Text')
-      ->instructions('Optionally add a CTA link to all posts.')
+      ->helperText('Optionally add a CTA link to all posts.')
       ->placeholder('eg. Read More'),
     Checkbox::make('Post Meta')
-      ->instructions('Optionally display some meta info at the bottom of each card.')
+      ->helperText('Optionally display some meta info at the bottom of each card.')
       ->choices([
         'date' => 'Published Date',
         'last_modified' => 'Modified Date',
@@ -22,6 +22,14 @@ return Block::make(__DIR__ . '/block.json')
       ]),
   ])
   ->apiResponse(function ($formatted_block) {
+
+
+
+
+    // TODO: figure out why this isn't running anymore (we changed Block->register stuff)
+  
+
+
     // Modify the REST API response for the "Posts" ACF Block -- we fetch the posts from the selected post type and include them in the block's data 
     $post_type = $formatted_block['data']['post_type'];
 

@@ -1,0 +1,85 @@
+html :where(.editor-styles-wrapper) {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+/* Style block editor Post Title to look less like a block (since it's not actually part of the renderer page): 
+----------------------------------------------*/
+
+.editor-styles-wrapper .edit-post-visual-editor__post-title-wrapper {
+  margin-top: 1rem !important;
+  border-bottom: 1px solid #e0e0e0;
+}
+.post-type-page
+  .editor-styles-wrapper
+  .edit-post-visual-editor__post-title-wrapper {
+  margin-bottom: 0px !important;
+}
+
+.editor-styles-wrapper .edit-post-visual-editor__post-title-wrapper h1 {
+  max-width: none !important;
+  font-size: var(--wp--preset--font-size--2-xl) !important;
+  font-weight: var(--wp--custom--font-weight--medium) !important;
+}
+
+/* Remove border-radius on full-width images: 
+----------------------------------------------*/
+
+.alignfull.wp-block-image {
+  --wp--custom--border-radius--lg: 0;
+}
+
+/* Other styles to make Gutenberg editor line up with decoupled front-end's styling.
+------------------------------------------------------------------------------------- */
+
+.editor-styles-wrapper
+  .block-editor-block-list__block.wp-block.wp-block-acf-cards,
+.editor-styles-wrapper
+  .block-editor-block-list__block.wp-block.wp-block-acf-posts {
+  background-color: transparent !important;
+}
+
+/** ===================================
+ **       BLOCK STYLE VARIATIONS
+ ** =================================== */
+
+.editor-styles-wrapper {
+  /* Button - Secondary:
+  ---------------------------------------------*/
+  .wp-block-button.is-style-secondary .wp-element-button {
+    background-color: var(--wp--preset--color--bg-root-dim) !important;
+    color: var(--wp--preset--color--text-root-vivid) !important;
+    border: 1px solid var(--wp--preset--color--border-root-dim);
+  }
+
+  /* Button - Outline:
+  ---------------------------------------------*/
+  .wp-block-button.is-style-outline .wp-element-button {
+    background-color: transparent !important;
+    color: var(--wp--preset--color--text-root) !important;
+
+    &:hover {
+      background-color: var(--wp--preset--color--bg-root-dim) !important;
+    }
+  }
+
+  .wp-block-button.is-style-secondary,
+  .wp-block-button.is-style-outline {
+    .wp-element-button {
+      border: 1px solid var(--wp--preset--color--border-root-dim);
+      padding: calc(0.5rem - 1px) calc(1rem - 1px);
+    }
+  }
+
+  /* Image - Round:
+  ---------------------------------------------*/
+  .wp-block-image.is-style-rounded-full img {
+    border-radius: 100%;
+  }
+
+  /* Image - No Shadow:
+  ---------------------------------------------*/
+  .wp-block-image.is-style-no-shadow img {
+    box-shadow: none;
+  }
+}
