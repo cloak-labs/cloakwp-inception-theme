@@ -87,9 +87,7 @@ $CloakWP
     'core/button',
     'core/list',
     'core/list-item',
-    'core/embed',
     'core/html',
-    'core/group',
     'core/quote',
     'core/code',
     'core/columns' => [
