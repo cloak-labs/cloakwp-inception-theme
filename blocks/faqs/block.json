@@ -1,0 +1,54 @@
+{
+  "$schema": "https://advancedcustomfields.com/schemas/json/main/block.json",
+  "name": "faqs",
+  "title": "FAQs",
+  "description": "Display FAQs.",
+  "textdomain": "cloakwp",
+  "category": "widgets",
+  "icon": "format-chat",
+  "keywords": [
+    "faq",
+    "frequently asked questions",
+    "questions",
+    "answers",
+    "support",
+    "help"
+  ],
+  "acf": {
+    "mode": "edit"
+  },
+  "supports": {
+    "anchor": true,
+    "mode": true,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "html": false,
+    "reusable": false,
+    "lock": false,
+    "spacing": {
+      "margin": [
+        "top",
+        "bottom"
+      ]
+    }
+  },
+  "attributes": {
+    "align": {
+      "type": "object",
+      "default": "wide"
+    },
+    "style": {
+      "type": "object",
+      "default": {
+        "spacing": {
+          "margin": {
+            "top": "var:preset|spacing|70",
+            "bottom": "var:preset|spacing|70"
+          }
+        }
+      }
+    }
+  }
+}
