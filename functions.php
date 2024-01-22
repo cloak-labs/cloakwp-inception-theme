@@ -4,10 +4,8 @@ use CloakWP\CloakWP;
 use CloakWP\Frontend;
 use CloakWP\Admin\Enqueue\Script;
 use CloakWP\Admin\Enqueue\Stylesheet;
-use CloakWP\Content\PostType;
 use CloakWP\Utils;
 use CloakWP\ACF\FieldGroup;
-use Extended\ACF\Fields\Text;
 use Extended\ACF\Fields\Image;
 use Extended\ACF\Location;
 
@@ -20,43 +18,12 @@ if (class_exists('CloakWP\Utils')) {
   Utils::require_glob(get_stylesheet_directory() . '/globals/*.php');
 }
 
-/**
- *  Example of modifying REST API response format of ACF Block fields (try appending 'name={field_name}', or 'type={field_type}', or 'blockName={block_name}' to target things more granularly):
- * 
- *  add_filter('cloakwp/rest/blocks/acf_response_format', function($field_value, $acf_field_object) {
- *    if (is_array($field_value) && isset($field_value['type']) && isset($field_value['value'])) {
- *      return $field_value;
- *    }
- *
- *    return array(
- *      'type' => $acf_field_object['type'],
- *      'value' => $field_value
- *    );
- *  }, 10, 3); 
- */
-
-/**
- * TODO:
- *  - add back in the PluginLoader class, rename it to CloakWPLoader, and register all WP hooks used within the CloakWP class through it; add a "run()" method to CloakWP 
- * that triggers all these hooks to get initiated. This is important because it turns CloakWP into a state object that doesn't do anything until run() is called, making 
- * it more extendable so that users can hook into and modify the CloakWP state before the run() method is executed. It enables us to build a plugin system into the CloakWP 
- * class; a plugins() method could accept an array of Classes that must implement a CloakWP_Plugin interface, which specifies that a plugin class must have a "run" method that 
- * returns a new CloakWP instance); i.e. similar to PayloadCMS plugins, a CloakWP plugin receives the current CloakWP configuration object, modifies it, and returns the 
- * new version, which the next plugin receives, modifies, and returns, and so on...  the final run() function executes all plugins, and then uses the final CloakWP 
- * object to run all hooks.
- *  - add cors() method that accepts either a whitelist array of URLS to allow CORS requests from, or a wildcard string ('*') to accept incoming requests from any domain.
- *  - add globals() method that accepts an array of Global classes -- these are ACF Options pages, which we're essentially renaming to "Globals"
- */
-
-
-
 // Add custom fields to WP's internal User Profile pages:
 FieldGroup::make('User Fields')
   ->fields([
     Image::make('Headshot')
       ->helperText('Used for author profile/bio frontend components.')
       ->previewSize('medium')
-    // ->withSettings(['local' => 'php'])
   ])
   ->location([
     Location::where('user_form', 'edit')
@@ -78,7 +45,6 @@ add_filter('cloakwp/author_format/included_meta', function ($default_meta, $user
 
 $CloakWP = CloakWP::getInstance();
 
-/** @disregard -- ignore \MY_FRONTEND_URL Intelephense error */
 $CloakWP
   ->frontends([
     Frontend::make('website', \MY_FRONTEND_URL)
@@ -89,12 +55,10 @@ $CloakWP
       ->enableDefaultOnDemandISR()
       ->enableDecoupledPreview()
       ->apiRouteUrl(function () use ($IS_DEVELOPMENT_MODE) {
-        /** @disregard -- ignore \MY_FRONTEND_URL Intelephense error */
         if ($IS_DEVELOPMENT_MODE) {
           // we use the IP address alternative to localhost while in dev, ensuring API requests from Docker to our locally running frontend actually work:
           return 'http://172.25.219.69:5000';
         } else {
-          /** @disregard -- ignore \MY_FRONTEND_URL Intelephense error */
           return \MY_FRONTEND_URL;
         }
       })
