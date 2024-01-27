@@ -22,14 +22,6 @@ return Block::make(__DIR__ . '/block.json')
       ]),
   ])
   ->apiResponse(function ($formatted_block) {
-
-
-
-
-    // TODO: figure out why this isn't running anymore (we changed Block->register stuff)
-  
-
-
     // Modify the REST API response for the "Posts" ACF Block -- we fetch the posts from the selected post type and include them in the block's data 
     $post_type = $formatted_block['data']['post_type'];
 

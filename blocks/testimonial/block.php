@@ -3,16 +3,23 @@
 use CloakWP\ACF\Block;
 use Extended\ACF\ConditionalLogic;
 use Extended\ACF\Fields\Group;
+use Extended\ACF\Fields\Number;
 use Extended\ACF\Fields\RadioButton;
 use Extended\ACF\Fields\Relationship;
 
 return Block::make(__DIR__ . '/block.json')
   ->fields([
-    RadioButton::make('Display all or some?', 'all_or_some')
+    RadioButton::make('Testimonial selection', 'all_or_some')
       ->column(50)
       ->choices([
-        'all' => 'All testimonials',
-        'some' => 'Some testimonials',
+        'all' => 'Most recent',
+        'random' => 'Random',
+        'some' => 'Manually select',
+      ]),
+    Number::make('Limit')
+      ->helperText('Optionally choose max number of testimonials to display. Leave empty to show all.')
+      ->conditionalLogic([
+        ConditionalLogic::where('all_or_some', '!=', 'some')
       ]),
     RadioButton::make('Display type')
       ->column(50)
@@ -35,9 +42,10 @@ return Block::make(__DIR__ . '/block.json')
       ]),
   ])
   ->apiResponse(function ($formatted_block) {
-    $all_or_some = isset($formatted_block['data']) ? $formatted_block['data']['all_or_some'] : 'all';
+    $query_type = isset($formatted_block['data']) ? $formatted_block['data']['all_or_some'] : 'all';
+    $limit = isset($formatted_block['data']) ? $formatted_block['data']['limit'] : null;
 
-    if ($all_or_some == 'some') {
+    if ($query_type == 'some') {
       // add back in post_content to testimonials -- by default it gets stripped out of ACF Relationship field values within blocks due to speed/size concerns 
       $final_testimonials = [];
       foreach ($formatted_block['data']['testimonials'] as $testimonial) {
@@ -50,12 +58,16 @@ return Block::make(__DIR__ . '/block.json')
     }
 
     // Modify the block's REST API response if "all" testimonials were selected -- we fetch and include all Testimonial posts 
-  
     $args = array(
       'post_type' => 'testimonial',
       'posts_per_page' => -1,
       'suppress_filters' => false
     );
+
+    if ($limit)
+      $args['posts_per_page'] = $limit;
+    if ($query_type == 'random')
+      $args['orderby'] = 'rand';
 
     // Get all testimonial posts
     $testimonials = get_posts($args);

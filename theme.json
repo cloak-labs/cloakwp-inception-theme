@@ -552,7 +552,7 @@
       },
       "core/column": {
         "spacing": {
-          "blockGap": "var(--wp--preset--spacing--50)"
+          "blockGap": "var(--wp--preset--spacing--30)"
         }
       },
       "core/quote": {
